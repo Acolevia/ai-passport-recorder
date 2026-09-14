@@ -3,8 +3,8 @@ FROM python:3.12-alpine
 WORKDIR /app
 COPY server.py /app/server.py
 
-ENV FOLO_DATA_DIR=/data \
-    FOLO_PORT=8080 \
+ENV AI_PASSPORT_DATA_DIR=/data \
+    AI_PASSPORT_PORT=8080 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 

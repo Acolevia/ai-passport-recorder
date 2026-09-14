@@ -3,12 +3,12 @@ services:
     build: ./server
     restart: unless-stopped
     ports:
-      - "${FOLO_PORT:-8080}:8080"
+      - "${AI_PASSPORT_PORT:-8080}:8080"
     environment:
-      FOLO_UPLOAD_TOKEN: "${FOLO_UPLOAD_TOKEN:?set FOLO_UPLOAD_TOKEN}"
-      FOLO_MAX_UPLOAD_BYTES: "${FOLO_MAX_UPLOAD_BYTES:-67108864}"
+      AI_PASSPORT_UPLOAD_TOKEN: "${AI_PASSPORT_UPLOAD_TOKEN:?set AI_PASSPORT_UPLOAD_TOKEN}"
+      AI_PASSPORT_MAX_UPLOAD_BYTES: "${AI_PASSPORT_MAX_UPLOAD_BYTES:-67108864}"
     volumes:
-      - folo-recordings:/data
+      - passport-recordings:/data
 
 volumes:
-  folo-recordings:
+  passport-recordings:

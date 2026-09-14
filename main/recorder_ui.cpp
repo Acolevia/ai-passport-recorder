@@ -50,7 +50,7 @@ void RecorderUi::Render(const char* state, const char* primary, const char* seco
     lv_obj_set_style_bg_opa(screen_, LV_OPA_COVER, 0);
 
     lv_obj_t* title = lv_label_create(screen_);
-    lv_label_set_text(title, "FOLO RECORDER");
+    lv_label_set_text(title, "PASSPORT RECORDER");
     lv_obj_set_style_text_font(title, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(title, lv_color_hex(kMuted), 0);
     lv_obj_align(title, LV_ALIGN_TOP_LEFT, 12, 18);

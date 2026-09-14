@@ -1,6 +1,8 @@
-# Folo AI Passport C3 Recorder
+# AI Passport Recorder
 
-把 Folo AI Passport C3 变成一支离线优先的录音笔。录音始终先保存到设备 Flash；配置家庭/办公室 Wi-Fi 和服务器后，设备会在空闲时自动上传，断网或服务器不可用不会影响录音，恢复连接后从中断位置续传。
+与 [AI Passport UNO](https://github.com/Acolevia/ai-passport-uno) 使用一致的项目命名方式。仓库：[Acolevia/ai-passport-recorder](https://github.com/Acolevia/ai-passport-recorder)。
+
+把 AI Passport C3 变成一支离线优先的录音笔。录音始终先保存到设备 Flash；配置家庭/办公室 Wi-Fi 和服务器后，设备会在空闲时自动上传，断网或服务器不可用不会影响录音，恢复连接后从中断位置续传。
 
 ## 功能
 
@@ -26,22 +28,22 @@
 ./deploy.sh
 ```
 
-脚本首次运行会生成 `.env`、创建随机上传令牌并启动服务。把 `.env` 中的 `FOLO_UPLOAD_TOKEN` 记下来。数据保存在 Docker 卷 `folo-recordings`，容器升级不会删除录音。默认端口为 `8080`；生产环境建议在它前面配置带 HTTPS 的 Caddy、Nginx 或其他反向代理。
+脚本首次运行会生成 `.env`、创建随机上传令牌并启动服务。把 `.env` 中的 `AI_PASSPORT_UPLOAD_TOKEN` 记下来。数据保存在 Docker 卷 `passport-recordings`，容器升级不会删除录音。默认端口为 `8080`；生产环境建议在它前面配置带 HTTPS 的 Caddy、Nginx 或其他反向代理。
 
 已有令牌时也可以直接一行启动：
 
 ```sh
-FOLO_UPLOAD_TOKEN='replace-with-a-long-random-token' docker compose up -d --build
+AI_PASSPORT_UPLOAD_TOKEN='replace-with-a-long-random-token' docker compose up -d --build
 ```
 
 健康检查：`http://服务器地址:8080/health`。更多接口和备份说明见 [server/README.md](server/README.md)。
 
 ### 2. 配置工牌
 
-1. 长按下键开启 `Folo-Recorder-XXXX` 热点。
+1. 长按下键开启 `Passport-Recorder-XXXX` 热点。
 2. 输入屏幕显示的 8 位随机数字密码。
 3. 手机访问 `http://192.168.4.1`。
-4. 在“Automatic server upload”中填写路由器 Wi-Fi、服务器 URL 和 `FOLO_UPLOAD_TOKEN`。
+4. 在“Automatic server upload”中填写路由器 Wi-Fi、服务器 URL 和 `AI_PASSPORT_UPLOAD_TOKEN`。
 5. 保存后长按下键退出热点；设备会在后台测试连接并上传现有录音。
 
 服务器 URL 可以是 `http://IP:8080`，也可以是正式的 `https://录音域名`。公网使用时强烈建议 HTTPS；Wi-Fi 密码和上传令牌保存在设备 NVS 中，不会显示在热点页面。
@@ -65,23 +67,25 @@ FOLO_UPLOAD_TOKEN='replace-with-a-long-random-token' docker compose up -d --buil
 
 ## 构建与刷机
 
+此次更名不改变 v0.7.0 的分区、录音格式或 NVS 配置；已有 v0.7.0 设备可只更新应用镜像，保留录音和设置。旧服务器部署更新时，请按 `.env.example` 更新环境变量名，令牌值保持原样，并将 Compose 中的 `passport-recordings` 映射到原有 Docker 数据卷（设置 `external: true` 和原卷的 `name`），避免连接到新的空数据卷。
+
 推荐 ESP-IDF 5.5.3（清单兼容 5.5～6.0）：
 
 ```sh
-FOLO_RECORDER_IDF_PATH=/path/to/esp-idf ./build.sh
+AI_PASSPORT_RECORDER_IDF_PATH=/path/to/esp-idf ./build.sh
 ```
 
 输出：
 
-- `build/folo_recorder_c3.bin`：应用镜像
-- `build/folo_recorder_c3_0x0.bin`：从 `0x0` 刷入的完整镜像
+- `build/ai_passport_recorder.bin`：应用镜像
+- `build/ai-passport-recorder-complete.bin`：从 `0x0` 刷入的完整镜像
 
 刷完整镜像：
 
 ```sh
 esptool.py --chip esp32c3 -p /dev/ttyACM0 -b 460800 \
   --before default_reset --after hard_reset write_flash 0x0 \
-  build/folo_recorder_c3_0x0.bin
+  build/ai-passport-recorder-complete.bin
 ```
 
 固件采用单 factory app：应用 1.56 MiB，录音 6.38 MiB。完整镜像会替换分区表；从其他布局切换时需先整片擦除，原录音和设置不会保留。

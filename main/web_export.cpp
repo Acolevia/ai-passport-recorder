@@ -24,7 +24,7 @@ constexpr char kPasswordAlphabet[] = "0123456789";
 constexpr size_t kPasswordLength = 8;  // WPA2-PSK requires at least eight characters.
 constexpr size_t kOggPageHeaderBytes = 28;  // Fixed header plus one lacing byte.
 constexpr uint32_t kOggGranuleSamplesPerFrame = 960;  // Opus granules always use 48 kHz.
-constexpr uint32_t kOggSerialBase = 0x4f4c4f46;       // "FOLO" in little endian.
+constexpr uint32_t kOggSerialBase = 0x4f4c4f46;       // Stable stream serial base.
 
 std::string GeneratePassword() {
     std::string password(kPasswordLength, 'A');
@@ -56,13 +56,13 @@ static_assert(sizeof(WaveHeader) == 44);
 
 constexpr char kPageHead[] = R"HTML(<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Folo Recorder</title><style>
+<title>AI Passport Recorder</title><style>
 body{font-family:system-ui,sans-serif;background:#10141d;color:#f2f5f8;max-width:720px;margin:auto;padding:24px}
 h1{font-size:26px}.sub{color:#9aa8b8}.card{background:#1c2533;border-radius:14px;padding:16px;margin:12px 0}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}audio{width:100%;margin:10px 0}
 a,button{background:#267bd9;color:white;border:0;border-radius:9px;padding:9px 13px;text-decoration:none;font-size:14px}
 button.delete{background:#b73845}input{box-sizing:border-box;width:100%;margin:5px 0 12px;padding:9px;border-radius:7px;border:1px solid #47566a;background:#10141d;color:#f2f5f8}label{font-size:13px;color:#9aa8b8}code{color:#42d392}</style></head><body>
-<h1>Folo Recorder</h1><p class="sub">Recordings are stored only on this badge. Downloads are converted to standard PCM WAV.</p>
+<h1>AI Passport Recorder</h1><p class="sub">Recordings are stored only on this badge. Downloads are converted to standard PCM WAV.</p>
 )HTML";
 
 constexpr char kPageTail[] = R"HTML(<p class="sub">Keep this page open only while Wi-Fi export mode is enabled.</p></body></html>)HTML";
@@ -337,7 +337,7 @@ bool WebExport::Start() {
     uint8_t mac[6] = {};
     esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
     char ssid[32];
-    std::snprintf(ssid, sizeof(ssid), "Folo-Recorder-%02X%02X", mac[4], mac[5]);
+    std::snprintf(ssid, sizeof(ssid), "Passport-Recorder-%02X%02X", mac[4], mac[5]);
     ssid_ = ssid;
     password_ = GeneratePassword();
 
@@ -568,7 +568,7 @@ esp_err_t WebExport::SendOggOpus(httpd_req_t* request) {
     WriteLittleEndian16(opus_head.data() + 16, 0);  // Output gain.
     opus_head[18] = 0;                              // Mono/stereo mapping family.
 
-    constexpr char kVendor[] = "Folo Recorder";
+    constexpr char kVendor[] = "AI Passport Recorder";
     std::array<uint8_t, 8 + 4 + sizeof(kVendor) - 1 + 4> opus_tags = {};
     std::memcpy(opus_tags.data(), "OpusTags", 8);
     WriteLittleEndian32(opus_tags.data() + 8, sizeof(kVendor) - 1);

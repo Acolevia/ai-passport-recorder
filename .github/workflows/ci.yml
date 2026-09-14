@@ -14,7 +14,7 @@ jobs:
           python-version: "3.12"
       - run: python -m unittest server/test_server.py -v
       - name: Build server container
-        run: docker build --tag folo-recorder-server:test server
+        run: docker build --tag ai-passport-recorder-server:test server
 
   firmware-build:
     runs-on: ubuntu-latest

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Small resumable upload server for Folo Recorder devices."""
+"""Small resumable upload server for AI Passport Recorder devices."""
 
 from __future__ import annotations
 
@@ -15,10 +15,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
-DATA_ROOT = Path(os.environ.get("FOLO_DATA_DIR", "/data")).resolve()
-UPLOAD_TOKEN = os.environ.get("FOLO_UPLOAD_TOKEN", "")
-MAX_UPLOAD_BYTES = int(os.environ.get("FOLO_MAX_UPLOAD_BYTES", str(64 * 1024 * 1024)))
-PORT = int(os.environ.get("FOLO_PORT", "8080"))
+DATA_ROOT = Path(os.environ.get("AI_PASSPORT_DATA_DIR", "/data")).resolve()
+UPLOAD_TOKEN = os.environ.get("AI_PASSPORT_UPLOAD_TOKEN", "")
+MAX_UPLOAD_BYTES = int(os.environ.get("AI_PASSPORT_MAX_UPLOAD_BYTES", str(64 * 1024 * 1024)))
+PORT = int(os.environ.get("AI_PASSPORT_PORT", "8080"))
 IDENTIFIER = re.compile(r"^[A-Za-z0-9_.-]{1,64}$")
 _locks_guard = threading.Lock()
 _upload_locks: dict[str, threading.Lock] = {}
@@ -40,13 +40,13 @@ def atomic_json(path: Path, value: dict[str, object]) -> None:
 
 
 class RecorderHandler(BaseHTTPRequestHandler):
-    server_version = "FoloRecorder/1.0"
+    server_version = "AIPassportRecorder/1.0"
     protocol_version = "HTTP/1.1"
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if parsed.path == "/health":
-            self.send_json(HTTPStatus.OK, {"status": "ok", "service": "folo-recorder"})
+            self.send_json(HTTPStatus.OK, {"status": "ok", "service": "ai-passport-recorder"})
             return
         if not self.authorized():
             return
@@ -106,7 +106,7 @@ class RecorderHandler(BaseHTTPRequestHandler):
         if not UPLOAD_TOKEN:
             self.send_json(
                 HTTPStatus.SERVICE_UNAVAILABLE,
-                {"error": "FOLO_UPLOAD_TOKEN is not configured"},
+                {"error": "AI_PASSPORT_UPLOAD_TOKEN is not configured"},
             )
             return False
         supplied = self.headers.get("Authorization", "")
@@ -256,9 +256,9 @@ class RecorderHandler(BaseHTTPRequestHandler):
 def main() -> None:
     DATA_ROOT.mkdir(parents=True, exist_ok=True)
     if not UPLOAD_TOKEN:
-        raise SystemExit("FOLO_UPLOAD_TOKEN must be set")
+        raise SystemExit("AI_PASSPORT_UPLOAD_TOKEN must be set")
     server = ThreadingHTTPServer(("0.0.0.0", PORT), RecorderHandler)
-    print(f"Folo Recorder server listening on :{PORT}, data={DATA_ROOT}", flush=True)
+    print(f"AI Passport Recorder server listening on :{PORT}, data={DATA_ROOT}", flush=True)
     server.serve_forever()
 
 

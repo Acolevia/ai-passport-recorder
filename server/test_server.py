@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 MODULE_PATH = Path(__file__).with_name("server.py")
-SPEC = importlib.util.spec_from_file_location("folo_server", MODULE_PATH)
+SPEC = importlib.util.spec_from_file_location("passport_server", MODULE_PATH)
 assert SPEC and SPEC.loader
 server_module = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(server_module)
