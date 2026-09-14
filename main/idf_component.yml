@@ -1,0 +1,7 @@
+dependencies:
+  idf: ">=5.5,<6.1"
+  espressif/button: "4.2.0"
+  espressif/esp_audio_codec: "2.5.0"
+  espressif/esp_codec_dev: "1.5.11"
+  espressif/esp_lvgl_port: "2.8.0~1"
+  lvgl/lvgl: "9.5.0"

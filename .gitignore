@@ -1,0 +1,9 @@
+build/
+sdkconfig
+sdkconfig.old
+dependencies.lock
+managed_components/
+.env
+server/data/
+server/__pycache__/
+server/.pytest_cache/

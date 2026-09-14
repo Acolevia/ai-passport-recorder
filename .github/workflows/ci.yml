@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  server-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest server/test_server.py -v
+
+  firmware-build:
+    runs-on: ubuntu-latest
+    container: espressif/idf:v5.5.3
+    steps:
+      - uses: actions/checkout@v4
+      - run: idf.py set-target esp32c3
+      - run: idf.py build

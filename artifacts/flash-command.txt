@@ -1,0 +1,8 @@
+python -m esptool --chip esp32c3 -p COM_PORT -b 460800 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_size 8MB --flash_freq 80m 0x0 folo_recorder_c3_0x0.bin
+
+# Upgrading from any version before v0.7.0: erase the whole chip first because
+# v0.7.0 changes the partition layout. This deletes recordings and settings.
+python -m esptool --chip esp32c3 -p COM_PORT -b 460800 --before default_reset --after no_reset erase_flash
+
+# App-only update is safe only when the device already uses the v0.7.0 layout.
+python -m esptool --chip esp32c3 -p COM_PORT -b 460800 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_size 8MB --flash_freq 80m 0x10000 folo_recorder_c3.bin
